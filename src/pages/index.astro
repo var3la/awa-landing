@@ -1,0 +1,144 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Galeria from '../components/Galeria.astro';
+
+const info = {
+  direccion: 'Av. de Galicia, 19',
+  ciudad: '27400 Monforte de Lemos, Lugo',
+  telefono: '+34 626 49 11 90',
+  telefonoLink: 'tel:+34626491190',
+  facebook: 'https://www.facebook.com/p/Awa-Monforte-100057185872353/?locale=es_ES',
+  tripadvisor: 'https://www.tripadvisor.es/Restaurant_Review-g642227-d8536045-Reviews-Awa-Monforte_de_Lemos_Province_of_Lugo_Galicia.html',
+  google: 'https://www.google.es/maps?cid=5085485685416468753',
+  mapa: 'https://www.google.com/maps?q=42.52156,-7.51592&output=embed',
+};
+
+// Revisa estos horarios con el local antes de publicar.
+const horario = [
+  ['Lunes a miércoles', 'desde las 18:00'],
+  ['Jueves a sábado', '18:00 – 06:00'],
+  ['Domingo', '18:00 – 00:00'],
+];
+
+const platos = [
+  { nombre: 'Huevos rotos con chorizo', texto: 'Para compartir, con raciones generosas.' },
+  { nombre: 'Tortilla de patata', texto: 'La que más se comenta entre quienes pasan por Monforte.' },
+  { nombre: 'Patatas con 4 salsas', texto: 'Perfectas para abrir mesa en la terraza.' },
+  { nombre: 'Pimientos de Padrón y mejillones', texto: 'Tapas clásicas para acompañar la tarde.' },
+  { nombre: 'Hamburguesa', texto: 'Lo que más recomiendan sus clientes habituales.' },
+  { nombre: 'Mojitos de fresa', texto: 'Para alargar la noche junto al río.' },
+];
+
+const opiniones = [
+  { texto: 'Ambiente espectacular, comida deliciosa y personal encantador.', fuente: 'Opinión en TripAdvisor' },
+  { texto: 'Qué espectáculo de tortilla de patata.', fuente: 'Opinión en Google' },
+  { texto: 'Un buen sitio para tapear al lado del río.', fuente: 'Opinión en Google' },
+];
+
+// Logo opcional: src/assets/logo.png (o .svg, .webp, .jpg)
+const logos = import.meta.glob('../assets/logo.{png,svg,webp,jpg,jpeg}', { eager: true });
+const logo = Object.values(logos)[0]?.default;
+
+// Portada: la primera foto de la galería, si existe.
+const fotos = import.meta.glob('../assets/gallery/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const portada = Object.entries(fotos).sort(([a], [b]) => a.localeCompare(b))[0]?.[1].default;
+---
+<Base
+  title="AWA · Bar-restaurante junto al río en Monforte de Lemos"
+  description="Tapas, copas y terraza junto al río en Monforte de Lemos. Abierto desde las 18:00. Av. de Galicia, 19."
+>
+  <header class="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 py-5 sm:px-8">
+    {logo
+      ? <Image src={logo} alt="AWA" height={56} class="h-12 w-auto sm:h-14" />
+      : <span class="text-2xl font-extrabold tracking-tight">AWA</span>}
+    <nav class="flex gap-5 text-sm font-medium">
+      <a class="hover:text-farol" href="#carta">Carta</a>
+      <a class="hover:text-farol" href="#galeria">Galería</a>
+      <a class="hover:text-farol" href="#visitanos">Visítanos</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="relative flex min-h-[88vh] items-end overflow-hidden bg-rio">
+      {portada && <Image src={portada} alt="" widths={[800, 1400, 2000]} sizes="100vw" loading="eager" class="absolute inset-0 h-full w-full object-cover" />}
+      <div class="absolute inset-0 bg-gradient-to-t from-noche via-noche/50 to-noche/10"></div>
+      <div class="relative mx-auto w-full max-w-6xl px-4 pb-16 sm:px-8">
+        <h1 class="max-w-3xl text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-7xl">Tapas y copas junto al río</h1>
+        <p class="mt-5 max-w-xl text-lg text-piedra/90">Terraza a la orilla del río en Monforte de Lemos. Abrimos cada tarde desde las 18:00.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={info.telefonoLink} class="rounded-full bg-farol px-6 py-3 font-semibold text-noche hover:brightness-110">Reservar por teléfono</a>
+          <a href="#visitanos" class="rounded-full border border-piedra/40 px-6 py-3 font-semibold hover:border-farol hover:text-farol">Cómo llegar</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="carta" class="px-4 py-20 sm:px-8">
+      <div class="mx-auto max-w-6xl">
+        <h2 class="max-w-xl text-3xl font-semibold sm:text-4xl">Lo que más se pide</h2>
+        <p class="mt-3 max-w-xl text-agua">Cocina rápida y raciones para compartir. Conviene reservar: casi siempre está lleno.</p>
+        <dl class="mt-10 grid gap-x-12 gap-y-6 sm:grid-cols-2">
+          {platos.map((p) => (
+            <div class="border-t border-piedra/15 pt-4">
+              <dt class="text-xl font-semibold">{p.nombre}</dt>
+              <dd class="mt-1 text-piedra/75">{p.texto}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+
+    <Galeria />
+
+    <section class="bg-rio px-4 py-20 sm:px-8">
+      <div class="mx-auto max-w-6xl">
+        <h2 class="text-3xl font-semibold sm:text-4xl">Lo que dicen quienes vienen</h2>
+        <p class="mt-3 text-agua">9 sobre 10 en Google con más de 1.000 opiniones, y 8,2 sobre 10 en TripAdvisor.</p>
+        <ul class="mt-10 grid gap-8 md:grid-cols-3">
+          {opiniones.map((o) => (
+            <li>
+              <blockquote class="text-xl leading-snug">“{o.texto}”</blockquote>
+              <p class="mt-3 text-sm text-agua">{o.fuente}</p>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          <a class="underline underline-offset-4 hover:text-farol" href={info.google} rel="noopener">Ver en Google</a>
+          <a class="underline underline-offset-4 hover:text-farol" href={info.tripadvisor} rel="noopener">Ver en TripAdvisor</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="visitanos" class="px-4 py-20 sm:px-8">
+      <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
+        <div>
+          <h2 class="text-3xl font-semibold sm:text-4xl">Visítanos</h2>
+          <address class="mt-6 text-lg not-italic">
+            {info.direccion}<br />{info.ciudad}
+          </address>
+          <p class="mt-2"><a class="text-farol underline underline-offset-4" href={info.telefonoLink}>{info.telefono}</a></p>
+
+          <h3 class="mt-10 text-xl font-semibold">Horario</h3>
+          <table class="mt-3 w-full max-w-sm text-left">
+            <tbody>
+              {horario.map(([dia, horas]) => (
+                <tr class="border-t border-piedra/15">
+                  <th scope="row" class="py-2 pr-4 font-normal text-piedra/75">{dia}</th>
+                  <td class="py-2 font-medium">{horas}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="mt-6 text-sm text-piedra/70">Aceptamos tarjeta. Síguenos en <a class="underline underline-offset-4 hover:text-farol" href={info.facebook} rel="noopener">Facebook</a>.</p>
+        </div>
+        <div class="min-h-80 overflow-hidden rounded-sm">
+          <iframe title="Mapa de AWA en Monforte de Lemos" src={info.mapa} class="h-full min-h-80 w-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-piedra/10 px-4 py-8 text-center text-sm text-piedra/60">
+    © {new Date().getFullYear()} AWA · Monforte de Lemos
+  </footer>
+</Base>

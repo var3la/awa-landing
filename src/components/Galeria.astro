@@ -1,0 +1,52 @@
+---
+import { Image } from 'astro:assets';
+
+// Todas las imágenes que pongas en src/assets/gallery aparecen aquí, ordenadas por nombre.
+const modulos = import.meta.glob('../assets/gallery/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const fotos = Object.entries(modulos)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([ruta, m]) => ({ src: m.default, alt: ruta.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') }));
+---
+<section id="galeria" class="px-4 py-20 sm:px-8">
+  <div class="mx-auto max-w-6xl">
+    <h2 class="max-w-xl text-3xl font-semibold sm:text-4xl">Así se vive AWA</h2>
+
+    {fotos.length === 0 ? (
+      <p class="mt-8 rounded-lg border border-dashed border-agua/50 p-8 text-agua">
+        Aún no hay fotos. Copia tus imágenes en <code>src/assets/gallery/</code> y aparecerán aquí.
+      </p>
+    ) : (
+      <ul class="mt-10 columns-2 gap-3 sm:columns-3 sm:gap-4">
+        {fotos.map((f) => (
+          <li class="mb-3 break-inside-avoid sm:mb-4">
+            <button type="button" class="block w-full overflow-hidden rounded-sm" data-lightbox aria-label={`Ampliar foto: ${f.alt}`}>
+              <Image src={f.src} alt={f.alt} widths={[400, 700, 1000]} sizes="(min-width: 640px) 33vw, 50vw" class="h-auto w-full" loading="lazy" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+
+  <dialog id="visor" class="m-auto max-h-[92vh] max-w-[94vw] bg-transparent p-0">
+    <form method="dialog" class="relative">
+      <img id="visor-img" alt="" class="max-h-[88vh] max-w-[94vw] rounded-sm object-contain" />
+      <button class="absolute right-2 top-2 rounded-full bg-noche/80 px-4 py-2 text-sm font-medium text-piedra">Cerrar</button>
+    </form>
+  </dialog>
+</section>
+
+<script>
+  const visor = document.getElementById('visor');
+  const img = document.getElementById('visor-img');
+  document.querySelectorAll('[data-lightbox]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const origen = btn.querySelector('img');
+      const candidatos = (origen.getAttribute('srcset') || '').split(',').map((s) => s.trim().split(' ')[0]).filter(Boolean);
+      img.src = candidatos.at(-1) || origen.currentSrc || origen.src;
+      img.alt = origen.alt;
+      visor.showModal();
+    });
+  });
+  visor?.addEventListener('click', (e) => { if (e.target === visor) visor.close(); });
+</script>
